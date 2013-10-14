@@ -99,11 +99,12 @@ $('#page-home').live('pageinit', function() {
     $('#startbutton').click(function() {       
         // Set childBrowser callback to detect our oauth_callback_url
         if (typeof window.plugins.childBrowser.onLocationChange !== "function") {
-            window.plugins.childBrowser.onLocationChange = function(loc){
-                alert("AppLaudLog: onLocationChange : " + loc);
+            window.plugins.childBrowser.onLocationChange = function(loc) {
+                // alert("AppLaudLog: onLocationChange : " + loc);
   
                 // If user hit "No, thanks" when asked to authorize access
                 if (loc.indexOf("http://google.com/?denied") >= 0) {
+                    alert("Closing ChildBrowser!");
                     $('#oauthStatus').html('<span style="color:red;">User declined access</span>');
                     window.plugins.childBrowser.close();
                     return;
@@ -132,8 +133,8 @@ $('#page-home').live('pageinit', function() {
                     // Exchange request token for access token
                     oauth.get('https://api.twitter.com/oauth/access_token?oauth_verifier='+verifier+'&'+requestParams,
                             function(data) { 
-                                alert("Verifier: " + verifier);
-                                alert("Request Param: " + requestParams);
+                                // alert("Verifier: " + verifier);
+                                // alert("Request Param: " + requestParams);
 
                                 var accessParams = {};
                                 var qvars_tmp = data.text.split('&');
@@ -152,19 +153,19 @@ $('#page-home').live('pageinit', function() {
                                 accessData.accessTokenKey = accessParams.oauth_token;
                                 accessData.accessTokenSecret = accessParams.oauth_token_secret;
                                 alert("AppLaudLog: Storing token key/secret in localStorage");
-                                alert(accessData.accessTokenSecret);
+                                console.log(accessData.accessTokenSecret);
                                 localStorage.setItem(localStoreKey, JSON.stringify(accessData));
 
                                 oauth.get('https://api.twitter.com/1.1/account/verify_credentials.json?skip_status=true',
                                         function(data) {
                                             var entry = JSON.parse(data.text);
-                                            alert(entry);
+                                            // alert(entry);
                                             $('#userInfo').html('Current user: <strong>' + entry.screen_name + '</strong>');
                                             console.log("AppLaudLog: screen_name: " + entry.screen_name);
                                         },
                                         function(data) { 
                                             alert('Error getting user credentials'); 
-                                            alert("AppLaudLog: Error " + data.text); 
+                                            console.log("AppLaudLog: Error " + data.text); 
                                             $('#oauthStatus').html('<span style="color:red;">Error getting user credentials</span>');
                                         }
                                 );                                         
@@ -238,8 +239,8 @@ $('#page-home').live('pageinit', function() {
                     $('#twitterdata').prepend(data_html);
                 },
                 function(data) { 
-                    lert('Error getting home timeline'); 
-                    alert("AppLaudLog: Error " + data.text); 
+                    alert('Error getting home timeline'); 
+                    console.log("AppLaudLog: Error " + data.text); 
                     $('#oauthStatus').html('<span style="color:red;">Error getting home timeline</span>');
                 }
         );          
@@ -271,7 +272,7 @@ $('#page-home').live('pageinit', function() {
             },
             function(data) { 
                 alert('Error getting mentions.'); 
-                alert("AppLaudLog: Error " + data.text);
+                console.log("AppLaudLog: Error " + data.text);
                 $('#oauthStatus').html('<span style="color:red;">Error getting mentions</span>');
             }
         );             
@@ -300,7 +301,7 @@ $('#page-home').live('pageinit', function() {
                     },
                     function(data) { 
                         alert('Error Tweeting.'); 
-                        alert("AppLaudLog: Error during tweet " + data.text);
+                        console.log("AppLaudLog: Error during tweet " + data.text);
                         $('#oauthStatus').html('<span style="color:red;">Error Tweeting</span>');                           
                         $.mobile.changePage($('#page-home'), { reverse : true, changeHash: false });
                     }
